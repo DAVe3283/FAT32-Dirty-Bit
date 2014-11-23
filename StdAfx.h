@@ -12,9 +12,12 @@
 
 #define WIN32_LEAN_AND_MEAN		// Exclude rarely-used stuff from Windows headers
 
+#define SECTOR_SIZE 512			// Should be the case for Windows 98
+
 #include <stdio.h>
 
 #include "RawIO.h"
+#include "Fat32Util.h"
 
 //{{AFX_INSERT_LOCATION}}
 // Microsoft Visual C++ will insert additional declarations immediately before the previous line.
