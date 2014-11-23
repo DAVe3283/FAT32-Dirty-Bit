@@ -22,3 +22,8 @@ Since newer OS support doesn't matter for our use case (and they have fsutil.exe
 Atomicity
 ---------
 Since directly touching the FAT32 file system header sector is dangerous, and the Windows 98 API calls for doing this only allow per-sector operations, it is important that this application not be interrupted. Unfortunately, it does not appear that there is an easy way to make operations globally atomic. The best option appears to be making the application a Win16 executable, since Windows 9x does its level best not to interrupt old legacy code. More details are available in [this MSDN article](https://support.microsoft.com/kb/KbView/125867).
+
+FAT32 Notes
+-----------
+[FAT32 File System Specification (Microsoft)](http://staff.washington.edu/dittrich/misc/fatgen103.pdf)
+[How FAT Works (Microsoft)](http://technet.microsoft.com/en-us/library/cc776720%28v=ws.10%29.aspx)
