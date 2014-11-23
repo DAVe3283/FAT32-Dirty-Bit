@@ -25,5 +25,6 @@ Since directly touching the FAT32 file system header sector is dangerous, and th
 
 FAT32 Notes
 -----------
-[FAT32 File System Specification (Microsoft)](http://staff.washington.edu/dittrich/misc/fatgen103.pdf)
-[How FAT Works (Microsoft)](http://technet.microsoft.com/en-us/library/cc776720%28v=ws.10%29.aspx)
+
+* [FAT32 File System Specification (Microsoft)](http://staff.washington.edu/dittrich/misc/fatgen103.pdf)
+* [How FAT Works (Microsoft)](http://technet.microsoft.com/en-us/library/cc776720%28v=ws.10%29.aspx)
