@@ -1,0 +1,39 @@
+<html>
+<body>
+<pre>
+<h1>Build Log</h1>
+<h3>
+--------------------Configuration: DiskView - Win32 Release--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating temporary file "C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP37.tmp" with contents
+[
+/nologo /MT /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /Fp"Release/DiskView.pch" /Yu"stdafx.h" /Fo"Release/" /Fd"Release/" /FD /c 
+"D:\Visual C Plus\DiskView\DiskView\DiskViewDoc.cpp"
+]
+Creating command line "cl.exe @C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP37.tmp" 
+Creating temporary file "C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP38.tmp" with contents
+[
+/nologo /subsystem:windows /incremental:no /pdb:"Release/DiskView.pdb" /machine:I386 /out:"Release/DiskView.exe" 
+".\Release\DiskView.obj"
+".\Release\DiskViewDoc.obj"
+".\Release\DiskViewView.obj"
+".\Release\GotoDlg.obj"
+".\Release\MainFrm.obj"
+".\Release\StdAfx.obj"
+".\Release\DiskView.res"
+]
+Creating command line "link.exe @C:\DOCUME~1\ADMINI~1\LOCALS~1\Temp\RSP38.tmp"
+<h3>Output Window</h3>
+Compiling...
+DiskViewDoc.cpp
+D:\Visual C Plus\DiskView\DiskView\DiskViewDoc.cpp(160) : warning C4244: '=' : conversion from 'unsigned long' to 'unsigned short', possible loss of data
+Linking...
+
+
+
+<h3>Results</h3>
+DiskView.exe - 0 error(s), 1 warning(s)
+</pre>
+</body>
+</html>
