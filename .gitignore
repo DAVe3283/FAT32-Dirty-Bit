@@ -1,28 +1,12 @@
-# Compiled Object files
-*.slo
-*.lo
-*.o
-*.obj
+# Build results
+[Dd]ebug/
+[Rr]elease/
 
-# Precompiled Headers
-*.gch
-*.pch
+# User-specific files
+*.opt
 
-# Compiled Dynamic libraries
-*.so
-*.dylib
-*.dll
+# VC++ Intellisense Database
+*.ncb
 
-# Fortran module files
-*.mod
-
-# Compiled Static libraries
-*.lai
-*.la
-*.a
-*.lib
-
-# Executables
-*.exe
-*.out
-*.app
+# Visual Studio 6 build log
+*.plg
