@@ -11,17 +11,30 @@ int main(int argc, char *argv[])
     // ISO mounting mode (full isostick integration)
     if (argc == 2)
     {
+        // Expand path, because Windows 98 gives us a short path by default
+        char fullPath[MAX_PATH];
+        DWORD res = GetLongPathName(
+            argv[1],
+            fullPath,
+            sizeof(fullPath)/sizeof(*fullPath));
+        if (res == 0)
+        {
+            DWORD errNo = GetLastError();
+            fprintf(stderr, "Error expanding file path: Error Number 0x%0x\n", errNo);
+            return 1;
+        }
+
         // Get drive letter and verify initial path
-        const char driveLetter(toupper(argv[1][0]));
+        const char driveLetter(toupper(fullPath[0]));
         if ((driveLetter < 'A') || (driveLetter > 'Z') ||
-            (argv[1][1] != ':') || (argv[1][2] != '\\'))
+            (fullPath[1] != ':') || (fullPath[2] != '\\'))
         {
             PrintUsage(argv[0]);
             return 1;
         }
 
         // Get relative ISO path
-        char *const relativeIsoPath = argv[1] + 3;
+        char *const relativeIsoPath = fullPath + 3;
 
         // Verify it is an ISO file
         const char isoExtension[] = ".iso";
@@ -77,7 +90,7 @@ int main(int argc, char *argv[])
         // Validate FAT 32 Volume ID (sanity check)
         if(!util.validate())
         {
-            printf("Invalid sector read! Aborting...\n");
+            fprintf(stderr, "Invalid sector read! Aborting...\n");
             return 1;
         }
 
@@ -87,7 +100,7 @@ int main(int argc, char *argv[])
         // Store updated sector
         if (!util.writeSector(0, sector))
         {
-            printf("Failed writing sector! Aborting...\n");
+            fprintf(stderr, "Failed writing sector! Aborting...\n");
             return 1;
         }
 
@@ -97,7 +110,7 @@ int main(int argc, char *argv[])
         // Store updated sector
         if (!util.writeSector(0, sector))
         {
-            printf("Failed writing sector! Aborting...\n");
+            fprintf(stderr, "Failed writing sector! Aborting...\n");
             return 1;
         }
 
@@ -161,7 +174,7 @@ int main(int argc, char *argv[])
         // Validate FAT 32 Volume ID (sanity check)
         if(!util.validate())
         {
-            printf("Invalid sector read! Aborting...\n");
+            fprintf(stderr, "Invalid sector read! Aborting...\n");
             return 1;
         }
 
@@ -171,7 +184,7 @@ int main(int argc, char *argv[])
         // Store updated sector
         if (!util.writeSector(0, sector))
         {
-            printf("Failed writing sector! Aborting...\n");
+            fprintf(stderr, "Failed writing sector! Aborting...\n");
             return 1;
         }
     } // argc == 3
