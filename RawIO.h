@@ -6,7 +6,11 @@
 #define VWIN32_DIOC_DOS_INT13     4
 #define VWIN32_DIOC_DOS_DRIVEINFO 6
 
-typedef struct _DIOC_REGISTERS {
+#define LEVEL1_LOCK                     1
+#define LEVEL1_LOCK_MAX_PERMISSION      0x0001
+
+typedef struct _DIOC_REGISTERS
+{
     DWORD reg_EBX;
     DWORD reg_EDX;
     DWORD reg_ECX;
@@ -19,7 +23,8 @@ typedef struct _DIOC_REGISTERS {
 #define CARRY_FLAG 1
 
 #pragma pack(1)
-typedef struct _DISKIO {
+typedef struct _DISKIO
+{
     DWORD  dwStartSector;   // starting logical sector number
     WORD   wSectors;        // number of sectors
     DWORD  dwBuffer;        // address of read/write buffer
@@ -168,7 +173,47 @@ Comments:
     hold all of the data to be written.
 ------------------------------------------------------------------*/
 BOOL NewWriteSectors (HANDLE hDev,
-                     BYTE   bDrive,
-                     DWORD  dwStartSector,
-                     WORD   wSectors,
-                     LPBYTE lpSectBuff);
+                      BYTE   bDrive,
+                      DWORD  dwStartSector,
+                      WORD   wSectors,
+                      LPBYTE lpSectBuff);
+
+/*------------------------------------------------------------------
+Parameters:
+    hVWin32Device
+        Handle of VWIN32
+
+    volume
+        The MS-DOS logical drive number. 0 = default, 1 = A, 2 = B,
+        3 = C, etc.
+
+    lock_level
+        ???
+
+    permissions
+        ???
+
+    isFat32
+        True if FAT32, False for FAT12/16
+------------------------------------------------------------------*/
+int LockLogicalVolume(HANDLE hVWin32Device,
+                      int volume,
+                      int lock_level,
+                      int permissions,
+                      BOOL isFat32 );
+
+/*------------------------------------------------------------------
+Parameters:
+    hVWin32Device
+        Handle of VWIN32
+
+    volume
+        The MS-DOS logical drive number. 0 = default, 1 = A, 2 = B,
+        3 = C, etc.
+
+    isFat32
+        True if FAT32, False for FAT12/16
+------------------------------------------------------------------*/
+int UnlockLogicalVolume(HANDLE hVWin32Device,
+                        int volume,
+                        BOOL isFat32 );
