@@ -15,6 +15,7 @@
 #define SECTOR_SIZE 512			// Should be the case for Windows 98
 
 #include <stdio.h>
+#include <errno.h>
 
 #include "Fat32Util.h"
 
