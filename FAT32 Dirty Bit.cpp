@@ -18,17 +18,17 @@ int main(int argc, char* argv[])
     // Get set/clear
     const char setClear(toupper(argv[1][0]));
     printf("Got char %c\n", setClear);
-    bool setBit(false);
+    bool setDirty(false);
     switch (setClear)
     {
     case 'S':
     case '1':
-        setBit = true;
+        setDirty = true;
         break;
 
     case 'C':
     case '0':
-        setBit = false;
+        setDirty = false;
         break;
 
     default:
