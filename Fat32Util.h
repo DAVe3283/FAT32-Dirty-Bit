@@ -1,5 +1,6 @@
 #include "stdint.h"
 
+#pragma pack(1)
 struct Fat32BPB
 {
     uint16_t bytesPerSector; // should be  512, 1024, 2048, 4096
@@ -48,7 +49,7 @@ union FatSector
     char rawData[SECTOR_SIZE];
     Fat32Header header;
 };
-
+#pragma pack()
 
 
 // Does the sector buffer contain a valid FAT32 Volume ID?
