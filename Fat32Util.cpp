@@ -136,15 +136,15 @@ bool ValidFat32(FatSector& sector)
     }
 
     // Drive number
-    if ((sector.header.bpbExt.physicalDriveNumber != 0x80) ||
-        (sector.header.bpbExt.physicalDriveNumber != 0x00))
+    if (!((sector.header.bpbExt.physicalDriveNumber == 0x80) ||
+          (sector.header.bpbExt.physicalDriveNumber == 0x00)))
     {
         return false;
     }
 
     // Dirty bit
-    if ((sector.header.bpbExt.dirtyBit != 0x00) ||
-        (sector.header.bpbExt.dirtyBit != 0x01))
+    if (!((sector.header.bpbExt.dirtyBit == 0x00) ||
+          (sector.header.bpbExt.dirtyBit == 0x01)))
     {
         return false;
     }
@@ -159,7 +159,7 @@ bool ValidFat32(FatSector& sector)
     // Volume label doesn't matter
 
     // File system ID should always be "FAT32   "
-    if (!strncmp(sector.header.bpbExt.systemId, "FAT32   ", 8))
+    if (strncmp(sector.header.bpbExt.systemId, "FAT32   ", 8))
     {
         return false;
     }
@@ -168,7 +168,7 @@ bool ValidFat32(FatSector& sector)
 
     // End marker
     if ((sector.header.endMarker[0] != 0x55) ||
-        (sector.header.endMarker[0] != 0xAA))
+        (sector.header.endMarker[1] != 0xAA))
     {
         return false;
     }
