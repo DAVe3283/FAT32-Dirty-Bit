@@ -5,7 +5,9 @@ bool Fat32Util::validate()
 {
     // Early out if not initialized
     if(!initialized)
+    {
         return false;
+    }
 
     // Verify according to Microsoft FAT specification document
 
@@ -183,6 +185,12 @@ bool Fat32Util::validate()
 
 bool Fat32Util::init(char driveLetter)
 {
+    // Just in case...
+    if(hDevice)
+    {
+        CloseHandle(hDevice);
+    }
+
     initialized = false;
     // The MS-DOS logical drive number. 0 = default, 1 = A, 2 = B, 3 = C, etc.
     driveId = (driveLetter - 'A' + 1);
@@ -208,8 +216,13 @@ bool Fat32Util::init(char driveLetter)
 
 }
 
-Fat32Util::Fat32Header Fat32Util::readSector(int sectorNumber)
+bool Fat32Util::readSector(int sectorNumber)
 {
+    if (!initialized)
+    {
+        return false;
+    }
+
     // Read a sector
     BOOL success = NewReadSectors(
         hDevice,
@@ -222,17 +235,34 @@ Fat32Util::Fat32Header Fat32Util::readSector(int sectorNumber)
     if (success == FALSE)
     {
         DWORD errNo = GetLastError();
-        CloseHandle(hDevice);
-        initialized = false;
+        return false;
     }
 
+    return true;
+}
+
+Fat32Util::Fat32Header Fat32Util::getData()
+{
     // Since sector.header is a struct, this should return a copy of the header,
     // not a reference to our header
-    return sector.header;
+    if(initialized)
+    {
+        return sector.header;
+    }
+    else
+    {
+        Fat32Header empty;
+        return empty;
+    }
 }
 
 bool Fat32Util::writeSector(int sectorNumber, Fat32Header header)
 {
+    if (!initialized)
+    {
+        return false;
+    }
+
     int result;
     BOOL success;
 
@@ -278,4 +308,10 @@ bool Fat32Util::writeSector(int sectorNumber, Fat32Header header)
     }
 
     return true;
+}
+
+Fat32Util::~Fat32Util()
+{
+    CloseHandle(hDevice);
+    initialized = false;
 }

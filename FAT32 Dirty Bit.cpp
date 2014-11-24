@@ -52,7 +52,15 @@ int main(int argc, char *argv[])
     }
 
     // Read a sector
-    Fat32Util::Fat32Header sector = util.readSector(0);
+    if(!util.readSector(0))
+    {
+        printf("Could not read sector! Aborting...\n");
+        return 1;
+    }
+
+    // Get a copy of the data
+    Fat32Util::Fat32Header sector = util.getData();
+
     // Validate FAT 32 Volume ID (sanity check)
     if(!util.validate())
     {

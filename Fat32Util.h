@@ -53,9 +53,12 @@ public:
     #pragma pack()
 
     bool init(char driveLetter);
-    Fat32Header readSector(int sectorNumber);
+    bool readSector(int sectorNumber);
+    Fat32Header getData();
     bool writeSector(int sectorNumber, Fat32Header header);
     bool validate();
+
+    ~Fat32Util();
 
 private:
     #pragma pack(1)
