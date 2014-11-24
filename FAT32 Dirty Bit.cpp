@@ -49,13 +49,13 @@ int main(int argc, char *argv[])
 
     // Get handle to VWIN32
     HANDLE hDevice = CreateFile(
-                         "\\\\.\\vwin32",
-                         0,
-                         0,
-                         NULL,
-                         0,
-                         FILE_FLAG_DELETE_ON_CLOSE,
-                         NULL);
+        "\\\\.\\vwin32",
+        0,
+        0,
+        NULL,
+        0,
+        FILE_FLAG_DELETE_ON_CLOSE,
+        NULL);
     if (hDevice == INVALID_HANDLE_VALUE)
     {
         printf("Couldn't get handle to VWIN32!\nProgram only supports Windows 98 at the moment.\n");
@@ -65,11 +65,11 @@ int main(int argc, char *argv[])
     // Read a sector
     FatSector sector;
     BOOL success = NewReadSectors(
-                       hDevice,
-                       driveId,
-                       0, // Start sector
-                       1, // Sectors to read
-                       (LPBYTE)sector.rawData);
+        hDevice,
+        driveId,
+        0, // Start sector
+        1, // Sectors to read
+        (LPBYTE)sector.rawData);
 
     // Returns TRUE on success
     if (success == FALSE)
@@ -110,7 +110,7 @@ int main(int argc, char *argv[])
     */
 
     // Validate FAT 32 Volume ID (sanity check)
-    if ( true ) //ValidFat32(sector.rawData))
+    if (ValidFat32(sector))
     {
         // Change the bit in our copy of the sector
         sector.header.bpbExt.dirtyBit = setDirty ? 0x01 : 0x00;
