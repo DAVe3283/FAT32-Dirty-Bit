@@ -17,7 +17,7 @@ int main(int argc, char *argv[])
 
     // Get set/clear
     const char setClear(toupper(argv[1][0]));
-    printf("Got char %c\n", setClear);
+
     bool setDirty(false);
     switch (setClear)
     {
@@ -44,97 +44,30 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    // The MS-DOS logical drive number. 0 = default, 1 = A, 2 = B, 3 = C, etc.
-    const int driveId(driveLetter - 'A' + 1);
-
-    // Get handle to VWIN32
-    HANDLE hDevice = CreateFile(
-        "\\\\.\\vwin32",
-        0,
-        0,
-        NULL,
-        0,
-        FILE_FLAG_DELETE_ON_CLOSE,
-        NULL);
-    if (hDevice == INVALID_HANDLE_VALUE)
+    Fat32Util util;
+    if (!util.init(driveLetter))
     {
-        printf("Couldn't get handle to VWIN32!\nProgram only supports Windows 98 at the moment.\n");
+        printf("Could not get volume handle! Aborting...\n");
         return 1;
     }
 
     // Read a sector
-    FatSector sector;
-    BOOL success = NewReadSectors(
-        hDevice,
-        driveId,
-        0, // Start sector
-        1, // Sectors to read
-        (LPBYTE)sector.rawData);
-
-    // Returns TRUE on success
-    if (success == FALSE)
+    Fat32Util::Fat32Header sector = util.readSector(0);
+    // Validate FAT 32 Volume ID (sanity check)
+    if(!util.validate())
     {
-        DWORD errNo = GetLastError();
-        printf("Unable to read raw sectors! Error code: 0x%08x\n", errNo);
-        CloseHandle(hDevice);
+        printf("Invalid sector read! Aborting...\n");
         return 1;
     }
 
-    /*
-    // Display the sector (for debug)
-    printf("Got sector:\n\n");
-    printf("      00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F\n");
-    printf("    /------------------------------------------------\n");
-    for (int i(0); i < SECTOR_SIZE; ++i)
+    // Change the bit in our copy of the sector
+    sector.bpbExt.dirtyBit = setDirty ? 0x01 : 0x00;
+
+    if (!util.writeSector(0, sector))
     {
-        // New line header
-        if (!(i % 0x10))
-        {
-            printf("%03x | ", i);
-        }
-
-        // Hex value of buffer
-        printf("%02x", sector.rawData[i] & 0xff);
-
-        // End of line?
-        if ((i % 0x10) == 0xF)
-        {
-            printf("\n");
-        }
-        else
-        {
-            printf(" ");
-        }
+        printf("Failed writing sector! Aborting...\n");
+        return 1;
     }
-    printf("\n");
-    */
-
-    // Validate FAT 32 Volume ID (sanity check)
-    if (ValidFat32(sector))
-    {
-        // Change the bit in our copy of the sector
-        sector.header.bpbExt.dirtyBit = setDirty ? 0x01 : 0x00;
-
-        int result;
-        // Attempt to lock the volume for write
-        result = LockLogicalVolume(hDevice, driveId, LEVEL1_LOCK, LEVEL1_LOCK_MAX_PERMISSION, true );
-        printf("Lock %s.\n", result == 0 ? "success" : "fail");
-
-        // Try actually writing the sector
-        success = NewWriteSectors(hDevice, driveId, 0, 1, (LPBYTE)sector.rawData);
-        printf("Write %s.\n", success ? "success" : "fail");
-
-        // Unlock the volume
-        result = UnlockLogicalVolume(hDevice, driveId, true);
-        printf("Unock %s.\n", result == 0 ? "success" : "fail");
-    }
-    else
-    {
-        printf("Invalid sector read! Aborting...\n");
-    }
-
-    // Done with raw disk I/O
-    CloseHandle(hDevice);
 
     return 0;
 }

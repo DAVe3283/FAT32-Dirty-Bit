@@ -16,7 +16,6 @@
 
 #include <stdio.h>
 
-#include "RawIO.h"
 #include "Fat32Util.h"
 
 //{{AFX_INSERT_LOCATION}}

@@ -1,8 +1,12 @@
 #include "stdafx.h"
 
 // Does the sector buffer contain a valid FAT32 Volume ID?
-bool ValidFat32(FatSector& sector)
+bool Fat32Util::validate()
 {
+    // Early out if not initialized
+    if(!initialized)
+        return false;
+
     // Verify according to Microsoft FAT specification document
 
     // Verify jump is valid (2 allowed forms)
@@ -174,5 +178,104 @@ bool ValidFat32(FatSector& sector)
     }
 
     // Probably valid!
+    return true;
+}
+
+bool Fat32Util::init(char driveLetter)
+{
+    initialized = false;
+    // The MS-DOS logical drive number. 0 = default, 1 = A, 2 = B, 3 = C, etc.
+    driveId = (driveLetter - 'A' + 1);
+
+    // Get handle to VWIN32
+    hDevice = CreateFile(
+        "\\\\.\\vwin32",
+        0,
+        0,
+        NULL,
+        0,
+        FILE_FLAG_DELETE_ON_CLOSE,
+        NULL);
+    if (hDevice == INVALID_HANDLE_VALUE)
+    {
+        return false;
+    }
+    else
+    {
+        initialized = true;
+        return true;
+    }
+
+}
+
+Fat32Util::Fat32Header Fat32Util::readSector(int sectorNumber)
+{
+    // Read a sector
+    BOOL success = NewReadSectors(
+        hDevice,
+        driveId,
+        sectorNumber, // Start sector
+        1, // Sectors to read
+        (LPBYTE)sector.rawData);
+
+    // Returns TRUE on success
+    if (success == FALSE)
+    {
+        DWORD errNo = GetLastError();
+        CloseHandle(hDevice);
+        initialized = false;
+    }
+
+    // Since sector.header is a struct, this should return a copy of the header,
+    // not a reference to our header
+    return sector.header;
+}
+
+bool Fat32Util::writeSector(int sectorNumber, Fat32Header header)
+{
+    int result;
+    BOOL success;
+
+    // Attempt to lock the volume for write
+    result = LockLogicalVolume(
+        hDevice,
+        driveId,
+        LEVEL1_LOCK,
+        LEVEL1_LOCK_MAX_PERMISSION,
+        true );
+    if (result != 0)
+    {
+        return false;
+    }
+
+    // Store the old content, in case something goes wrong
+    char old[SECTOR_SIZE];
+    memcpy(old, sector.rawData, SECTOR_SIZE);
+    sector.header = header;
+
+    // Try actually writing the sector
+    success = NewWriteSectors(
+        hDevice,
+        driveId,
+        0,
+        1,
+        (LPBYTE)sector.rawData);
+    if (!success)
+    {
+        // If we failed, put the old data back
+        memcpy(sector.rawData, old, SECTOR_SIZE);
+        return false;
+    }
+
+    // Unlock the volume
+    result = UnlockLogicalVolume(
+        hDevice,
+        driveId,
+        true);
+    if (result != 0)
+    {
+        return false;
+    }
+
     return true;
 }
