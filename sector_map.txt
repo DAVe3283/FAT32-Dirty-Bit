@@ -1,0 +1,47 @@
+FAT32 Header
+============
+
+Address Length          Content
+--------------------------------------
+00h     3 Bytes         Jump Code + NOP
+03h     8 Bytes         OEM Name (Probably MSWIN4.1)
+0Bh     1 Word          Bytes Per Sector
+0Dh     1 Byte          Sectors Per Cluster
+0Eh     1 Word          Reserved Sectors
+10h     1 Byte          Number of Copies of FAT
+11h     1 Word          Maximum Root DirectoryEntries (N/A for FAT32)
+13h     1 Word          Number of Sectors inPartition Smaller than 32MB (N/A for FAT32)
+15h     1 Byte          Media Descriptor (F8h forHard Disks)
+16h     1 Word          Sectors Per FAT in Older FATSystems (N/A for FAT32)
+18h     1 Word          Sectors Per Track
+1Ah     1 Word          Number of Heads
+1Ch     1 Double Word   Number of Hidden Sectors inPartition
+20h     1 Double Word   Number of Sectors inPartition
+24h     1 Double Word   Number of Sectors Per FAT
+28h     1 Word          Flags (Bits 0-4 IndicateActive FAT Copy) (Bit 7 Indicates whether FAT Mirroringis Enabled or Disabled <Clear is Enabled>) (If FATMirroring is Disabled, the FAT Information is onlywritten to the copy indicated by bits 0-4)
+2Ah     1 Word          Version of FAT32 Drive (HighByte = Major Version, Low Byte = Minor Version)
+2Ch     1 Double Word   Cluster Number of the Startof the Root Directory
+30h     1 Word          Sector Number of the FileSystem Information Sector (See Structure Below)(Referenced from the Start of the Partition)
+32h     1 Word          Sector Number of the BackupBoot Sector (Referenced from the Start of the Partition)
+34h     12 Bytes        Reserved
+40h     1 Byte          Logical Drive Number ofPartition
+41h     1 Byte          Unused (Could be High Byteof Previous Entry)
+42h     1 Byte          Extended Signature (29h)
+43h     1 Double Word   Serial Number of Partition
+47h     11 Bytes        Volume Name of Partition
+52h     8 Bytes         FAT Name (FAT32)
+5Ah     420 Bytes       Executable Code
+1FEh    2 Bytes         Boot Record Signature (55hAAh)
+
+
+
+
+FAT16 Header
+============
+
+0x00    3 bytes     Jump instruction
+0x03    8 bytes     OEM ID
+0x0B    25 bytes    BPB
+0x24    26 bytes    Extended BPB
+0x3E    448 bytes   Bootstrap code
+0x01FE  2 bytes     End of sector marker

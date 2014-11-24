@@ -63,13 +63,13 @@ int main(int argc, char* argv[])
     }
 
     // Read a sector
-    char buffer[SECTOR_SIZE] = { 0 };
+    FatSector sector;
     BOOL success = NewReadSectors(
         hDevice,
         driveId,
         0, // Start sector
         1, // Sectors to read
-        (LPBYTE)buffer);
+        (LPBYTE)sector.rawData);
 
     // Returns TRUE on success
     if (success == FALSE)
@@ -93,7 +93,7 @@ int main(int argc, char* argv[])
         }
 
         // Hex value of buffer
-        printf("%02x", buffer[i] & 0xff);
+        printf("%02x", sector.rawData[i] & 0xff);
 
         // End of line?
         if ((i % 0x10) == 0xF)
@@ -107,8 +107,10 @@ int main(int argc, char* argv[])
     }
     printf("\n");
 
+    printf("Label: %s\n", sector.header.bpbExt.label);
+
     // Validate FAT 32 Volume ID (sanity check)
-    if (ValidFat32(buffer))
+    if (ValidFat32(sector.rawData))
     {
         // DEBUG
         printf("Valid FAT32 Volume ID!\n");
