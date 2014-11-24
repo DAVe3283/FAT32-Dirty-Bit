@@ -263,19 +263,14 @@ bool Fat32Util::writeSector(int sectorNumber, Fat32Header header)
         return false;
     }
 
-    int result;
     BOOL success;
 
-    // Attempt to lock the volume for write
-    result = LockLogicalVolume(
-        hDevice,
-        driveId,
-        LEVEL1_LOCK,
-        LEVEL1_LOCK_MAX_PERMISSION,
-        true );
-    if (result != 0)
+    // Store the old lock state
+    bool oldLock = locked;
+    // Make sure the disk is locked
+    if(!locked)
     {
-        return false;
+        lockDrive();
     }
 
     // Store the old content, in case something goes wrong
@@ -297,21 +292,80 @@ bool Fat32Util::writeSector(int sectorNumber, Fat32Header header)
         return false;
     }
 
-    // Unlock the volume
-    result = UnlockLogicalVolume(
-        hDevice,
-        driveId,
-        true);
-    if (result != 0)
+    // If we were not previously locked, then unlock again
+    if(!oldLock)
     {
-        return false;
+        unlockDrive();
     }
 
     return true;
 }
 
+bool Fat32Util::lockDrive()
+{
+    if(!initialized)
+    {
+        return false;
+    }
+
+    int result = 0;
+    if(!locked)
+    {
+        // Attempt to lock the volume for write
+        result = LockLogicalVolume(
+            hDevice,
+            driveId,
+            LEVEL1_LOCK,
+            LEVEL1_LOCK_MAX_PERMISSION,
+            true );
+    }
+    if (result != 0)
+    {
+        return false;
+    }
+
+    locked = true;
+    return true;
+}
+
+bool Fat32Util::unlockDrive()
+{
+    if(!initialized)
+    {
+        return false;
+    }
+
+    int result = 0;
+    if(locked)
+    {
+        // Unlock the volume
+        result = UnlockLogicalVolume(
+            hDevice,
+            driveId,
+            true);
+    }
+    if (result != 0)
+    {
+        return false;
+    }
+
+    locked = false;
+    return true;
+}
+
+Fat32Util::Fat32Util()
+{
+    initialized = false;
+    locked = false;
+}
+
 Fat32Util::~Fat32Util()
 {
+    if(locked)
+    {
+        unlockDrive();
+    }
+
     CloseHandle(hDevice);
     initialized = false;
 }

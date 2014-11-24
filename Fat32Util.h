@@ -58,6 +58,10 @@ public:
     bool writeSector(int sectorNumber, Fat32Header header);
     bool validate();
 
+    bool lockDrive();
+    bool unlockDrive();
+
+    Fat32Util();
     ~Fat32Util();
 
 private:
@@ -71,6 +75,7 @@ private:
 
     FatSector sector;
     bool initialized;
+    bool locked;
     int driveId;
     HANDLE hDevice;
 
